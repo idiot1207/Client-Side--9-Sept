@@ -1,0 +1,140 @@
+<div class="tablebackground" style="overflow-x: scroll;">
+  <div class="tablewidth">
+    <mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8" matSort style="overflow:auto">
+      <ng-container matColumnDef="sr_no">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>S/N</mat-header-cell>
+        <mat-cell *matCellDef="let element ;let i=dataIndex">
+          <div><b> {{i+1}}</b></div>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Team Name</mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.name}}</b> </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="project_name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Project Name</mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.project_name}}</b> </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="release">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Release</mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.release}}</b> </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="project_status">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Project Status</mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.project_status}}</b> </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="targetfps">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Target FP's </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.targetfps}}</b>  </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="fp_closed">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Closed FP's </mat-header-cell>
+        <mat-cell *matCellDef="let element"><b>{{element.fp_closed}}</b>  </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="target_sps">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Target SP's </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.target_sps}}</b> </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="sp_closed">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Closed SP's </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.sp_closed}}</b> </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="bugs_raised">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Bugs Raised </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.bugs_raised}}</b> </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="bugs_closed">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Bugs Closed </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <b>{{element.bugs_closed}}</b> </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let element;let i=dataIndex">
+              <button mat-icon-button class="delete-button" (click)="delete(i)">
+            <mat-icon color="accent">delete</mat-icon>
+          </button>
+
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="expand">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let element ;let i=dataIndex">
+          <mat-icon *ngIf="!expanded[i]" (click)="expandedElement = expandedElement === element ? null : element">
+            expand_more</mat-icon>
+          <mat-icon *ngIf="expanded[i]" (click)="expandedElement = expandedElement === element ? null : element">
+            expand_less</mat-icon>
+        </mat-cell>
+      </ng-container>
+    
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let i=dataIndex;let row; columns: displayedColumns;" matRipple class="element-row"
+        [cdkDetailRow]="row" (click)="changeIcon(i)" [cdkDetailRowTpl]="tpl">
+      </mat-row>
+    </mat-table>
+
+    <ng-template #tpl let-element>
+      <div class="mat-row detail-row" [@detailExpand] style="overflow: auto">
+        <div style=text-align:center *ngIf="!checkEmpty(element.iterationData)"><br><b>No data<br></b><br></div>
+        <table *ngIf="checkEmpty(element.iterationData)" align="center" id="innerTable">
+          <tr style="font-size: 13px">
+            <th id="innerTable1">SR No</th>
+            <th id="innerTable1">Iteration Name</th>
+            <th id="innerTable1">Start Date</th>
+            <th id="innerTable1">Finish Date</th>
+            <th id="innerTable1">Target FP</th>
+            <th id="innerTable1">Closed FP</th>
+            <th id="innerTable1">Target US</th>
+            <th id="innerTable1">Closed US</th>
+            <th id="innerTable1">Bug Raised</th>
+            <th id="innerTable1">Bug Closed</th>
+          </tr>
+          <tr *ngFor=" let i=index;let data of element.iterationData | valueArray; " style="text-align: center;font-size: 12px">
+            <td id="innerTable1">{{i+1}}</td>
+            <td id="innerTable1">{{data.itertaionName}}</td>
+            <td id="innerTable1">{{data.startDate}}</td>
+            <td id="innerTable1">{{data.finishDate}}</td>
+            <td id="innerTable1">{{data.iterationtargetFeaturePoint}}</td>
+            <td id="innerTable1">{{data.iterationclosedFeaturePoint}}</td>
+            <td id="innerTable1">{{data.iterationuserStoriesData}}</td>
+            <td id="innerTable1">{{data.iterationclosedStoryPoint}}</td>
+            <td id="innerTable1">{{data.iterationbugRaised}}</td>
+            <td id="innerTable1">{{data.iterationbugClosed}}</td>
+          </tr> 
+
+          <!-- <tfoot>
+
+            <tr >
+              <th id="innerTable1" colspan="4">Total</th>
+              <th id="innerTable1">{{getsum('iterationtargetFeaturePoint')}}</th>
+              <th id="innerTable1">{{getsum('iterationclosedFeaturePoint')}}</th>
+              <th id="innerTable1">{{getsum('iterationuserStoriesData')}}</th>
+              <th id="innerTable1">{{getsum('iterationclosedStoryPoint')}}</th>
+              <th id="innerTable1">{{getsum('iterationbugRaised')}}</th>
+              <th id="innerTable1">{{getsum('iterationbugClosed')}}</th>
+            </tr>
+          </tfoot> -->
+        </table>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+
+<mat-grid-list cols="2" rowHeight="66px">
+  <mat-grid-tile>
+    <figure class="mat-figure1">
+      <button mat-raised-button [disableRipple]="true" (click)="importData();" class="primarycolor">Import Data</button>
+      &nbsp;&nbsp;&nbsp;
+      <button mat-raised-button class="primarycolor">Export Data </button>
+    </figure>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <!-- paginator -->
+    <figure class="mat-figure2">
+      <mat-paginator #paginator [pageIndex]="0" [pageSize]=" " [pageSizeOptions]="[5, 10, 25, 100]"
+        showFirstLastButtons>
+      </mat-paginator>
+    </figure>
+  </mat-grid-tile>
+</mat-grid-list>

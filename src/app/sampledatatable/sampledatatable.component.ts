@@ -1,0 +1,119 @@
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSort, MatTableDataSource, MatPaginator } from '@angular/material';
+import { TeamDetails } from '../modals/productData';
+import { ImportedDataComponent } from '../dialogs/imported-data/imported-data.component';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { TeamnameService } from '../Service/teamname.service';
+
+@Component({
+  // tslint:disable-next-line:component-selector
+  selector: 'output-data-table',
+  templateUrl: './sampledatatable.component.html',
+  styleUrls: ['./sampledatatable.component.css'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('220ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
+})
+export class sampleDataTableComponent implements OnInit {
+
+  displayedColumns: string[] = ['sr_no', 'name', 'project_name', 'release', 'project_status',
+    'targetfps', 'fp_closed', 'target_sps', 'sp_closed', 'bugs_raised', 'bugs_closed', 'action', 'expand'];
+  dataSource;
+  users: TeamDetails[];
+  expandedElement: TeamDetails | null;
+  expanded = [];
+  dataSource2: any;
+  iterationData: any;
+  teamdetailArray: any;
+  currentIndex;
+  isEmpty;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+
+
+  constructor( 
+    public dialog: MatDialog,
+    private teamNameService: TeamnameService,
+  ) { }
+  isExpansionDetailRow = (index, row) => row.hasOwnProperty('detailRow');
+
+  ngOnInit() {
+    this.users = [];
+    this.teamdetailArray = [];
+    for (let i = 0; i < this.users.length; i++) {
+      this.expanded[i] = false;
+    }
+  }
+
+  // Refreshing table is just redifining matDataSource
+  public refreshTable() {
+    this.dataSource = new MatTableDataSource(this.users);
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+  }
+
+  // dialog method to be called when user click on import data button
+  importData(teamdetails: TeamDetails) {
+    const dialogRef = this.dialog.open(ImportedDataComponent, {
+      height: '490px',
+      width: '500px',
+      disableClose: true,
+      data: { teamdetails }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== 0) {
+        let count = 0;
+        for (let i = 0; i < this.users.length; i++) {
+          if (result.project_name === this.users[i].project_name && result.name === this.users[i].name) {
+            count++;
+            alert(' Team Name :' + result.name + '\nProject Name :' + result.project_name + '\nalready exists');
+          }
+        }
+        if (count === 0) {
+          this.users.push(result);
+          this.refreshTable();
+        }
+      }
+    });
+  }
+
+  delete(index) {
+    const action = confirm(' Sure want to delete \n Team Name :'
+      + this.users[index].name + '\n Project Name ' + this.users[index].project_name + '?');
+    if (action) {
+      this.users.splice(index, 1);
+      this.refreshTable();
+    }
+  }
+  // getsum(columnName, index) {
+  //   const key = 'iterationData';
+  //   let sum = 0;
+  //   for (const keys in this.users[index][key]) {
+  //     if (this.users[index][key].hasOwnProperty(keys)) {
+  //       sum += Number(this.users[index][key][keys][columnName]);
+  //     }
+  //   }
+
+  //   return sum;
+  // }
+  changeIcon(index) {
+     this.expanded[index] = this.expanded[index] ? false : true;
+  }
+  checkEmpty(object){
+   if ( Object.keys(object).length > 0) {
+     return true;
+   }
+   else {
+     return false;
+   }
+  }
+}
+
+
+
+
